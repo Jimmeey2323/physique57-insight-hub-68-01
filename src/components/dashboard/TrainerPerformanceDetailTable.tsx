@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ModernDataTable } from '@/components/ui/ModernDataTable';
+import { UniformTrainerTable } from './UniformTrainerTable';
 import { ProcessedTrainerData } from './TrainerDataProcessor';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Users, Activity, Target, TrendingUp } from 'lucide-react';
@@ -135,8 +135,8 @@ export const TrainerPerformanceDetailTable: React.FC<TrainerPerformanceDetailTab
       align: 'center' as const,
       render: (value: number) => (
         <div className="flex flex-col items-center">
-          <span className="font-semibold text-blue-600">{formatNumber(value)}</span>
-          <Activity className="w-3 h-3 text-blue-400 mt-1" />
+          <span className="font-semibold text-blue-600 text-sm">{formatNumber(value)}</span>
+          <Activity className="w-3 h-3 text-blue-400 mt-0.5" />
         </div>
       )
     },
@@ -146,8 +146,8 @@ export const TrainerPerformanceDetailTable: React.FC<TrainerPerformanceDetailTab
       align: 'center' as const,
       render: (value: number) => (
         <div className="flex flex-col items-center">
-          <span className="font-semibold text-purple-600">{formatNumber(value)}</span>
-          <Users className="w-3 h-3 text-purple-400 mt-1" />
+          <span className="font-semibold text-purple-600 text-sm">{formatNumber(value)}</span>
+          <Users className="w-3 h-3 text-purple-400 mt-0.5" />
         </div>
       )
     },
@@ -157,8 +157,8 @@ export const TrainerPerformanceDetailTable: React.FC<TrainerPerformanceDetailTab
       align: 'center' as const,
       render: (value: number) => (
         <div className="flex flex-col items-center">
-          <span className="font-semibold text-green-600">{formatCurrency(value)}</span>
-          <div className="text-xs text-green-500 mt-1">Total</div>
+          <span className="font-semibold text-green-600 text-sm">{formatCurrency(value)}</span>
+          <div className="text-xs text-green-500 mt-0.5">Total</div>
         </div>
       )
     },
@@ -167,7 +167,7 @@ export const TrainerPerformanceDetailTable: React.FC<TrainerPerformanceDetailTab
       header: 'Avg Class Size',
       align: 'center' as const,
       render: (value: number) => (
-        <span className="font-medium text-slate-700">{value.toFixed(1)}</span>
+        <span className="font-medium text-slate-700 text-sm">{value.toFixed(1)}</span>
       )
     },
     {
@@ -175,7 +175,7 @@ export const TrainerPerformanceDetailTable: React.FC<TrainerPerformanceDetailTab
       header: 'Revenue/Session',
       align: 'center' as const,
       render: (value: number) => (
-        <span className="font-medium text-orange-600">{formatCurrency(value)}</span>
+        <span className="font-medium text-orange-600 text-sm">{formatCurrency(value)}</span>
       )
     },
     {
@@ -276,13 +276,12 @@ export const TrainerPerformanceDetailTable: React.FC<TrainerPerformanceDetailTab
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-          <ModernDataTable
+          <UniformTrainerTable
             data={processedTableData}
             columns={columns}
             onRowClick={handleRowClick}
             headerGradient="from-purple-600 to-indigo-600"
             showFooter={false}
-            maxHeight="600px"
             stickyHeader={true}
           />
       </CardContent>

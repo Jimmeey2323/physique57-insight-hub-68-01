@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ModernDataTable } from '@/components/ui/ModernDataTable';
+import { UniformTrainerTable } from './UniformTrainerTable';
 import { ProcessedTrainerData } from './TrainerDataProcessor';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Zap, Clock, Target, TrendingUp, TrendingDown, Award } from 'lucide-react';
@@ -359,13 +359,12 @@ export const TrainerEfficiencyAnalysisTable: React.FC<TrainerEfficiencyAnalysisT
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <ModernDataTable
+        <UniformTrainerTable
           data={efficiencyData}
           columns={columns}
           onRowClick={handleRowClick}
           headerGradient="from-orange-600 to-red-600"
           showFooter={false}
-          maxHeight="600px"
           stickyHeader={true}
         />
       </CardContent>

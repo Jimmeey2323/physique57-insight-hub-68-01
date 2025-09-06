@@ -7,7 +7,7 @@ import { TrainerYearOnYearTable } from './TrainerYearOnYearTable';
 import { TrainerPerformanceDetailTable } from './TrainerPerformanceDetailTable';
 import { TrainerEfficiencyAnalysisTable } from './TrainerEfficiencyAnalysisTable';
 import { MonthOnMonthTrainerTable } from './MonthOnMonthTrainerTable';
-import { EnhancedTrainerDrillDownModal } from './EnhancedTrainerDrillDownModal';
+import { DynamicTrainerDrillDownModal } from './DynamicTrainerDrillDownModal';
 import { TrainerFilterSection } from './TrainerFilterSection';
 import { TrainerMetricTabs } from './TrainerMetricTabs';
 import { EnhancedTrainerRankings } from './EnhancedTrainerRankings';
@@ -377,9 +377,9 @@ export const EnhancedTrainerPerformanceSection = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Enhanced Drill Down Modal */}
+      {/* Dynamic Drill Down Modal */}
       {selectedTrainer && drillDownData && (
-        <EnhancedTrainerDrillDownModal
+        <DynamicTrainerDrillDownModal
           isOpen={!!selectedTrainer}
           onClose={closeDrillDown}
           trainerName={selectedTrainer}

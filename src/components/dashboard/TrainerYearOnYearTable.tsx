@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ModernDataTable } from '@/components/ui/ModernDataTable';
+import { UniformTrainerTable } from './UniformTrainerTable';
 import { ProcessedTrainerData } from './TrainerDataProcessor';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Calendar, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
@@ -103,13 +103,13 @@ export const TrainerYearOnYearTable: React.FC<TrainerYearOnYearTableProps> = ({
       key: 'currentSessions' as const,
       header: `${new Date().getFullYear()} Sessions`,
       align: 'center' as const,
-      render: (value: number) => <span className="font-semibold text-blue-600">{formatNumber(value)}</span>
+      render: (value: number) => <span className="font-semibold text-blue-600 text-sm">{formatNumber(value)}</span>
     },
     {
       key: 'previousSessions' as const,
       header: `${new Date().getFullYear() - 1} Sessions`,
       align: 'center' as const,
-      render: (value: number) => <span className="font-semibold text-gray-600">{formatNumber(value)}</span>
+      render: (value: number) => <span className="font-semibold text-gray-600 text-sm">{formatNumber(value)}</span>
     },
     {
       key: 'sessionsGrowth' as const,
@@ -118,7 +118,7 @@ export const TrainerYearOnYearTable: React.FC<TrainerYearOnYearTableProps> = ({
       render: (value: number) => (
         <div className="flex items-center justify-center gap-1">
           {value > 0 ? <TrendingUp className="w-3 h-3 text-green-500" /> : value < 0 ? <TrendingDown className="w-3 h-3 text-red-500" /> : null}
-          <span className={`font-semibold ${value > 0 ? 'text-green-600' : value < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+          <span className={`font-semibold text-sm ${value > 0 ? 'text-green-600' : value < 0 ? 'text-red-600' : 'text-gray-600'}`}>
             {value.toFixed(1)}%
           </span>
         </div>
@@ -128,13 +128,13 @@ export const TrainerYearOnYearTable: React.FC<TrainerYearOnYearTableProps> = ({
       key: 'currentRevenue' as const,
       header: `${new Date().getFullYear()} Revenue`,
       align: 'center' as const,
-      render: (value: number) => <span className="font-semibold text-green-600">{formatCurrency(value)}</span>
+      render: (value: number) => <span className="font-semibold text-green-600 text-sm">{formatCurrency(value)}</span>
     },
     {
       key: 'previousRevenue' as const,
       header: `${new Date().getFullYear() - 1} Revenue`,
       align: 'center' as const,
-      render: (value: number) => <span className="font-semibold text-gray-600">{formatCurrency(value)}</span>
+      render: (value: number) => <span className="font-semibold text-gray-600 text-sm">{formatCurrency(value)}</span>
     },
     {
       key: 'revenueGrowth' as const,
@@ -143,7 +143,7 @@ export const TrainerYearOnYearTable: React.FC<TrainerYearOnYearTableProps> = ({
       render: (value: number) => (
         <div className="flex items-center justify-center gap-1">
           {value > 0 ? <TrendingUp className="w-3 h-3 text-green-500" /> : value < 0 ? <TrendingDown className="w-3 h-3 text-red-500" /> : null}
-          <span className={`font-semibold ${value > 0 ? 'text-green-600' : value < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+          <span className={`font-semibold text-sm ${value > 0 ? 'text-green-600' : value < 0 ? 'text-red-600' : 'text-gray-600'}`}>
             {value.toFixed(1)}%
           </span>
         </div>
@@ -153,13 +153,13 @@ export const TrainerYearOnYearTable: React.FC<TrainerYearOnYearTableProps> = ({
       key: 'currentAvgClassSize' as const,
       header: `${new Date().getFullYear()} Avg Size`,
       align: 'center' as const,
-      render: (value: number) => <span className="font-semibold text-purple-600">{value.toFixed(1)}</span>
+      render: (value: number) => <span className="font-semibold text-purple-600 text-sm">{value.toFixed(1)}</span>
     },
     {
       key: 'previousAvgClassSize' as const,
       header: `${new Date().getFullYear() - 1} Avg Size`,
       align: 'center' as const,
-      render: (value: number) => <span className="font-semibold text-gray-600">{value.toFixed(1)}</span>
+      render: (value: number) => <span className="font-semibold text-gray-600 text-sm">{value.toFixed(1)}</span>
     },
     {
       key: 'classSizeGrowth' as const,
@@ -168,7 +168,7 @@ export const TrainerYearOnYearTable: React.FC<TrainerYearOnYearTableProps> = ({
       render: (value: number) => (
         <div className="flex items-center justify-center gap-1">
           {value > 0 ? <TrendingUp className="w-3 h-3 text-green-500" /> : value < 0 ? <TrendingDown className="w-3 h-3 text-red-500" /> : null}
-          <span className={`font-semibold ${value > 0 ? 'text-green-600' : value < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+          <span className={`font-semibold text-sm ${value > 0 ? 'text-green-600' : value < 0 ? 'text-red-600' : 'text-gray-600'}`}>
             {value.toFixed(1)}%
           </span>
         </div>
@@ -213,14 +213,13 @@ export const TrainerYearOnYearTable: React.FC<TrainerYearOnYearTableProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <ModernDataTable
+        <UniformTrainerTable
           data={yearOnYearData}
           columns={columns}
           onRowClick={handleRowClick}
           headerGradient="from-emerald-600 to-teal-600"
           showFooter={true}
           footerData={totals}
-          maxHeight="600px"
           stickyHeader={true}
         />
       </CardContent>
