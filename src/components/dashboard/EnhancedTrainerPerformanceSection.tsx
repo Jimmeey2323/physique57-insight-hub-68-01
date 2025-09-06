@@ -3,7 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePayrollData } from '@/hooks/usePayrollData';
-import { EnhancedYearOnYearTrainerTable } from './EnhancedYearOnYearTrainerTable';
+import { TrainerYearOnYearTable } from './TrainerYearOnYearTable';
 import { TrainerPerformanceDetailTable } from './TrainerPerformanceDetailTable';
 import { TrainerEfficiencyAnalysisTable } from './TrainerEfficiencyAnalysisTable';
 import { MonthOnMonthTrainerTable } from './MonthOnMonthTrainerTable';
@@ -262,20 +262,34 @@ export const EnhancedTrainerPerformanceSection = () => {
 
       {/* Analysis Tabs */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 bg-white border border-gray-200 p-1 rounded-xl shadow-sm h-14">
+        <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200 p-1 rounded-xl shadow-sm h-14">
           <TabsTrigger
             value="month-on-month"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-gray-50 data-[state=active]:hover:bg-blue-700"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-xs transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-gray-50 data-[state=active]:hover:bg-blue-700"
           >
             <Calendar className="w-4 h-4" />
-            Month-on-Month Analysis
+            Month-on-Month
           </TabsTrigger>
           <TabsTrigger
             value="year-on-year"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-gray-50 data-[state=active]:hover:bg-blue-700"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-xs transition-all duration-200 data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-gray-50 data-[state=active]:hover:bg-emerald-700"
           >
             <TrendingUp className="w-4 h-4" />
-            Year-on-Year Comparison
+            Year-on-Year
+          </TabsTrigger>
+          <TabsTrigger
+            value="efficiency-analysis"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-xs transition-all duration-200 data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-gray-50 data-[state=active]:hover:bg-orange-700"
+          >
+            <Target className="w-4 h-4" />
+            Efficiency
+          </TabsTrigger>
+          <TabsTrigger
+            value="performance-detail"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-xs transition-all duration-200 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-gray-50 data-[state=active]:hover:bg-purple-700"
+          >
+            <Award className="w-4 h-4" />
+            Performance
           </TabsTrigger>
         </TabsList>
 
@@ -309,20 +323,7 @@ export const EnhancedTrainerPerformanceSection = () => {
             />
           </div>
           
-          {/* Year-on-Year Main Table */}
-          <EnhancedYearOnYearTrainerTable
-            data={processedData}
-            onExport={() => {}}
-          />
-          
-          {/* Performance Detail Table */}
-          <TrainerPerformanceDetailTable
-            data={processedData}
-            onRowClick={handleRowClick}
-          />
-          
-          {/* Efficiency Analysis Table */}
-          <TrainerEfficiencyAnalysisTable
+          <TrainerYearOnYearTable
             data={processedData}
             onRowClick={handleRowClick}
           />
@@ -330,6 +331,48 @@ export const EnhancedTrainerPerformanceSection = () => {
           <AdvancedNotesModal 
             pageId="year-on-year-trainer"
             title="Year-on-Year Analysis Notes"
+          />
+        </TabsContent>
+
+        <TabsContent value="efficiency-analysis" className="space-y-6">
+          <div className="flex justify-end mb-4">
+            <AdvancedExportButton 
+              payrollData={payrollData || []}
+              defaultFileName="trainer-efficiency-analysis"
+              size="sm"
+              variant="outline"
+            />
+          </div>
+          
+          <TrainerEfficiencyAnalysisTable
+            data={processedData}
+            onRowClick={handleRowClick}
+          />
+          
+          <AdvancedNotesModal 
+            pageId="efficiency-analysis-trainer"
+            title="Efficiency Analysis Notes"
+          />
+        </TabsContent>
+
+        <TabsContent value="performance-detail" className="space-y-6">
+          <div className="flex justify-end mb-4">
+            <AdvancedExportButton 
+              payrollData={payrollData || []}
+              defaultFileName="trainer-performance-detail"
+              size="sm"
+              variant="outline"
+            />
+          </div>
+          
+          <TrainerPerformanceDetailTable
+            data={processedData}
+            onRowClick={handleRowClick}
+          />
+          
+          <AdvancedNotesModal 
+            pageId="performance-detail-trainer"
+            title="Performance Detail Notes"
           />
         </TabsContent>
       </Tabs>

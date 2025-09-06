@@ -266,7 +266,7 @@ export const TrainerPerformanceDetailTable: React.FC<TrainerPerformanceDetailTab
 
   return (
     <Card className="bg-gradient-to-br from-white via-slate-50/30 to-white border-0 shadow-xl">
-      <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
         <CardTitle className="flex items-center gap-2">
           <Users className="w-5 h-5" />
           Trainer Performance Detail Analysis
@@ -280,7 +280,7 @@ export const TrainerPerformanceDetailTable: React.FC<TrainerPerformanceDetailTab
             data={processedTableData}
             columns={columns}
             onRowClick={handleRowClick}
-            headerGradient="from-blue-600 to-purple-600"
+            headerGradient="from-purple-600 to-indigo-600"
             showFooter={false}
             maxHeight="600px"
             stickyHeader={true}
