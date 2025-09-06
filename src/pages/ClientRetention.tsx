@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useNewClientData } from '@/hooks/useNewClientData';
 import { useGlobalLoading } from '@/hooks/useGlobalLoading';
 import { useNavigate } from 'react-router-dom';
-import { Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Home, Users } from 'lucide-react';
 import { Footer } from '@/components/ui/footer';
 import { ProfessionalLoader } from '@/components/dashboard/ProfessionalLoader';
 import { AdvancedExportButton } from '@/components/ui/AdvancedExportButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, TrendingUp, Target, Users as UsersIcon, Eye, Calendar, PieChart } from 'lucide-react';
+import { BarChart3, TrendingUp, Target, Users as UsersIcon, Eye, Calendar, Filter, PieChart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { NewClientFilterOptions } from '@/types/dashboard';
 import { getPreviousMonthDateRange } from '@/utils/dateUtils';
-import { HeroSection } from '@/components/ui/HeroSection';
-import { LocationTabs } from '@/components/ui/LocationTabs';
 
 // Import enhanced components
+import { ClientConversionLocationSelector } from '@/components/dashboard/ClientConversionLocationSelector';
 import { EnhancedClientConversionFilterSection } from '@/components/dashboard/EnhancedClientConversionFilterSection';
 import { ClientConversionDetailedDataTable } from '@/components/dashboard/ClientConversionDetailedDataTable';
 import { EnhancedClientConversionMetrics } from '@/components/dashboard/EnhancedClientConversionMetrics';
@@ -99,37 +99,51 @@ const ClientRetention = () => {
   }, [data]);
 
   const uniqueMembershipTypes = React.useMemo(() => {
-    const types = new Set<string>();
+    const memberships = new Set<string>();
     data.forEach(client => {
-      if (client.membershipType) types.add(client.membershipType);
+      if (client.membershipUsed) memberships.add(client.membershipUsed);
     });
-    return Array.from(types).filter(Boolean);
+    return Array.from(memberships).filter(Boolean);
   }, [data]);
 
-  // Filter data based on selected location and filters
+  // Filter data by selected location and filters
   const filteredData = React.useMemo(() => {
-    console.log('Filtering data with location:', selectedLocation, 'and filters:', filters);
+    console.log('Filtering data. Total records:', data.length, 'Selected location:', selectedLocation);
+    
     let filtered = data;
     
-    // Filter by selected location
-    if (selectedLocation && selectedLocation !== 'All Locations') {
-      filtered = filtered.filter(client => 
-        client.firstVisitLocation === selectedLocation || client.homeLocation === selectedLocation
-      );
-    }
-    
-    // Apply date filter
-    if (filters.dateRange.start && filters.dateRange.end) {
-      const startDate = new Date(filters.dateRange.start);
-      const endDate = new Date(filters.dateRange.end);
+    // Apply date range filter FIRST
+    if (filters.dateRange.start || filters.dateRange.end) {
+      const startDate = filters.dateRange.start ? new Date(filters.dateRange.start) : null;
+      const endDate = filters.dateRange.end ? new Date(filters.dateRange.end) : null;
+
       filtered = filtered.filter(client => {
-        if (!client.createdDate) return true;
-        const clientDate = new Date(client.createdDate);
-        return clientDate >= startDate && clientDate <= endDate;
+        if (!client.firstVisitDate) return false;
+        
+        let clientDate: Date;
+        if (client.firstVisitDate.includes('/')) {
+          const [day, month, year] = client.firstVisitDate.split(' ')[0].split('/');
+          clientDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        } else {
+          clientDate = new Date(client.firstVisitDate);
+        }
+        
+        if (isNaN(clientDate.getTime())) return false;
+        if (startDate && clientDate < startDate) return false;
+        if (endDate && clientDate > endDate) return false;
+        return true;
       });
     }
     
     // Apply location filter
+    if (selectedLocation !== 'All Locations') {
+      filtered = filtered.filter(client => {
+        const clientLocation = client.firstVisitLocation || client.homeLocation || 'Unknown';
+        return clientLocation === selectedLocation;
+      });
+    }
+    
+    // Apply additional filters
     if (filters.location.length > 0) {
       filtered = filtered.filter(client => 
         filters.location.includes(client.firstVisitLocation || '') ||
@@ -186,48 +200,50 @@ const ClientRetention = () => {
 
   console.log('Rendering ClientRetention with data:', data.length, 'records, filtered:', filteredData.length);
 
-  // Prepare location data for LocationTabs
-  const locationData = [
-    { 
-      id: 'All Locations', 
-      name: 'All Locations', 
-      fullName: 'All Locations',
-      count: data.length
-    },
-    {
-      id: 'Kwality House, Kemps Corner',
-      name: 'Kemps Corner',
-      fullName: 'Kwality House, Kemps Corner',
-      count: data.filter(client => 
-        client.firstVisitLocation === 'Kwality House, Kemps Corner' || client.homeLocation === 'Kwality House, Kemps Corner'
-      ).length
-    },
-    {
-      id: 'Supreme HQ, Bandra',
-      name: 'Bandra',
-      fullName: 'Supreme HQ, Bandra',
-      count: data.filter(client => 
-        client.firstVisitLocation === 'Supreme HQ, Bandra' || client.homeLocation === 'Supreme HQ, Bandra'
-      ).length
-    },
-    {
-      id: 'Kenkere House, Bengaluru',
-      name: 'Bengaluru',
-      fullName: 'Kenkere House, Bengaluru',
-      count: data.filter(client => 
-        client.firstVisitLocation === 'Kenkere House, Bengaluru' || client.homeLocation === 'Kenkere House, Bengaluru'
-      ).length
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/20">
-      <HeroSection 
-        title="Client Conversion & Retention"
-        subtitle="Comprehensive client acquisition and retention analysis across all customer touchpoints"
-        icon={Users}
-        variant="client"
-      />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+      {/* Animated Header Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-green-900 via-teal-800 to-blue-900 text-white">
+        <div className="absolute inset-0 bg-black/20" />
+        
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-4 -left-4 w-32 h-32 bg-white/10 rounded-full animate-pulse"></div>
+          <div className="absolute top-20 right-10 w-24 h-24 bg-green-300/20 rounded-full animate-bounce delay-1000"></div>
+          <div className="absolute bottom-10 left-20 w-40 h-40 bg-teal-300/10 rounded-full animate-pulse delay-500"></div>
+        </div>
+        
+        <div className="relative px-8 py-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between mb-8">
+              <Button 
+                onClick={() => navigate('/')} 
+                variant="outline" 
+                size="sm" 
+                className="gap-2 bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-200"
+              >
+                <Home className="w-4 h-4" />
+                Dashboard
+              </Button>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 border border-white/20 animate-fade-in-up">
+                <Users className="w-5 h-5" />
+                <span className="font-medium">Client Analytics</span>
+              </div>
+              
+              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-white via-green-100 to-blue-100 bg-clip-text text-transparent animate-fade-in-up delay-200">
+                Client Conversion & Retention
+              </h1>
+              
+              <p className="text-xl text-green-100 max-w-2xl mx-auto leading-relaxed animate-fade-in-up delay-300">
+                Comprehensive client acquisition and retention analysis across all customer touchpoints
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="container mx-auto px-6 py-8">
         <main className="space-y-8">
@@ -241,13 +257,54 @@ const ClientRetention = () => {
           />
 
           {/* Consolidated Location Tabs */}
-          <LocationTabs 
-            locations={locationData}
-            selectedLocation={selectedLocation}
-            onLocationChange={setSelectedLocation}
-            variant="buttons"
-            showCounts={true}
-          />
+          <Card className="bg-white shadow-sm border border-gray-200">
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                <Button
+                  variant={selectedLocation === 'All Locations' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSelectedLocation('All Locations')}
+                  className="gap-2 text-xs"
+                >
+                  <Users className="w-4 h-4" />
+                  All Locations ({data.length})
+                </Button>
+                <Button
+                  variant={selectedLocation === 'Kwality House, Kemps Corner' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSelectedLocation('Kwality House, Kemps Corner')}
+                  className="gap-2 text-xs"
+                >
+                  <Users className="w-4 h-4" />
+                  Kemps Corner ({data.filter(client => 
+                    client.firstVisitLocation === 'Kwality House, Kemps Corner' || client.homeLocation === 'Kwality House, Kemps Corner'
+                  ).length})
+                </Button>
+                <Button
+                  variant={selectedLocation === 'Supreme HQ, Bandra' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSelectedLocation('Supreme HQ, Bandra')}
+                  className="gap-2 text-xs"
+                >
+                  <Users className="w-4 h-4" />
+                  Bandra ({data.filter(client => 
+                    client.firstVisitLocation === 'Supreme HQ, Bandra' || client.homeLocation === 'Supreme HQ, Bandra'
+                  ).length})
+                </Button>
+                <Button
+                  variant={selectedLocation === 'Kenkere House, Bengaluru' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setSelectedLocation('Kenkere House, Bengaluru')}
+                  className="gap-2 text-xs"
+                >
+                  <Users className="w-4 h-4" />
+                  Bengaluru ({data.filter(client => 
+                    client.firstVisitLocation === 'Kenkere House, Bengaluru' || client.homeLocation === 'Kenkere House, Bengaluru'
+                  ).length})
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Main Content Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -267,32 +324,46 @@ const ClientRetention = () => {
                     Charts
                   </TabsTrigger>
                   <TabsTrigger value="monthonmonth" className="text-sm font-medium">
-                    <Target className="w-4 h-4 mr-2" />
-                    Month/Month
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Month-on-Month
                   </TabsTrigger>
                   <TabsTrigger value="yearonyear" className="text-sm font-medium">
                     <Calendar className="w-4 h-4 mr-2" />
-                    Year/Year
+                    Year-on-Year
                   </TabsTrigger>
                   <TabsTrigger value="memberships" className="text-sm font-medium">
-                    <UsersIcon className="w-4 h-4 mr-2" />
+                    <Target className="w-4 h-4 mr-2" />
                     Memberships
                   </TabsTrigger>
                   <TabsTrigger value="detailed" className="text-sm font-medium">
                     <Eye className="w-4 h-4 mr-2" />
-                    Detailed
+                    Detailed View
                   </TabsTrigger>
                 </TabsList>
               </CardContent>
             </Card>
 
+
             <TabsContent value="overview" className="space-y-8">
-              <EnhancedClientConversionMetrics data={filteredData} />
-              <ClientConversionAdvancedMetrics data={filteredData} />
+              <ClientConversionAdvancedMetrics
+                data={filteredData}
+                payrollData={[]}
+                onDrillDown={(title, data) => {
+                  // For metric cards, we'll just close any modal since they don't have individual client data
+                  console.log('Metric drill down:', title, data);
+                }}
+              />
               <ClientConversionTopBottomLists data={filteredData} />
             </TabsContent>
 
             <TabsContent value="analytics" className="space-y-8">
+              <ClientConversionAdvancedMetrics
+                data={filteredData}
+                payrollData={[]}
+                onDrillDown={(title, data) => {
+                  console.log('Analytics drill down:', title, data);
+                }}
+              />
               <ClientConversionEntityTable data={filteredData} />
             </TabsContent>
 
@@ -325,18 +396,48 @@ const ClientRetention = () => {
 
           <AdvancedExportButton 
             newClientData={filteredData} 
-            selectedLocation={selectedLocation}
+            defaultFileName={`client-conversion-${selectedLocation.replace(/\s+/g, '-').toLowerCase()}`}
           />
         </main>
-      </div>
 
-      <ClientConversionDrillDownModal 
-        isOpen={drillDownModal.isOpen}
-        onClose={() => setDrillDownModal({ isOpen: false, client: null })}
-        client={drillDownModal.client}
-      />
+        {/* Client-Specific Drill Down Modal */}
+        <ClientConversionDrillDownModal 
+          isOpen={drillDownModal.isOpen}
+          onClose={() => setDrillDownModal({ isOpen: false, client: null })}
+          client={drillDownModal.client}
+        />
+      </div>
       
       <Footer />
+
+      <style>{`
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out forwards;
+        }
+        
+        .delay-200 {
+          animation-delay: 0.2s;
+        }
+        
+        .delay-300 {
+          animation-delay: 0.3s;
+        }
+        
+        .delay-500 {
+          animation-delay: 0.5s;
+        }
+      `}</style>
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { Home, Percent } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Footer } from '@/components/ui/footer';
 import { AdvancedExportButton } from '@/components/ui/AdvancedExportButton';
+import { HeroSection } from '@/components/ui/HeroSection';
 
 const DiscountsPromotions: React.FC = () => {
   const navigate = useNavigate();
