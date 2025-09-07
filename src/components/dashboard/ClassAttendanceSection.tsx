@@ -11,7 +11,6 @@ import { ClassAttendanceFilterSection } from './ClassAttendanceFilterSection';
 import { EnhancedClassAttendanceMetricCards } from './EnhancedClassAttendanceMetricCards';
 import { EnhancedClassFormatRankings } from './EnhancedClassFormatRankings';
 import { ComprehensiveHostedClassesTable } from './ComprehensiveHostedClassesTable';
-import { ClassPerformanceAnalysisSection } from './ClassPerformanceAnalysisSection';
 import { EnhancedMultiViewTable } from './EnhancedMultiViewTable';
 import { ComprehensiveClassFormatComparison } from './ComprehensiveClassFormatComparison';
 import { useNavigate } from 'react-router-dom';
@@ -159,9 +158,6 @@ export const ClassAttendanceSection: React.FC = () => {
 
               {/* Enhanced Multi-View Analysis Table */}
               <EnhancedMultiViewTable data={locationFilteredData} />
-              
-              {/* Class Performance Analysis Section */}
-              <ClassPerformanceAnalysisSection data={locationFilteredData} />
 
               {/* Comprehensive Hosted Classes Table */}
               <ComprehensiveHostedClassesTable data={hostedClasses} />
